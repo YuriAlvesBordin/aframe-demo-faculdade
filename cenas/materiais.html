@@ -12,90 +12,72 @@
       pointer-events: auto;
     }
     #back:hover { background: rgba(255,255,255,0.15); }
-
-    #hud {
+    #info {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px; pointer-events: none;
+      background: rgba(0,0,0,0.7); color: #777; padding: 8px 20px;
+      border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+      pointer-events: none; border: 1px solid #222;
     }
-
-    .hud-tag {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
-      padding: 6px 14px; border-radius: 6px; border: 1px solid;
-      background: rgba(0,0,0,0.65);
-    }
-
     a-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
   <a href="../index.html" id="back">&#8592; Voltar</a>
+  <div id="info">point light &nbsp;&mdash;&nbsp; emissive &nbsp;&mdash;&nbsp; metalness &nbsp;&mdash;&nbsp; Arraste para girar</div>
 
-  <div id="hud">
-    <span class="hud-tag" style="color:#888;border-color:#333">ambient</span>
-    <span class="hud-tag" style="color:#fff;border-color:#555">directional</span>
-    <span class="hud-tag" style="color:#ff1a1a;border-color:#ff1a1a">point</span>
-    <span class="hud-tag" style="color:#2979ff;border-color:#2979ff">point</span>
-    <span class="hud-tag" style="color:#00c853;border-color:#00c853">spot</span>
-  </div>
+  <a-scene background="color: #020202">
 
-  <a-scene background="color: #050505">
+    <a-light type="ambient" color="#ffffff" intensity="0.03"></a-light>
 
-    <!-- Ambient: low intensity so other lights are visible -->
-    <a-light type="ambient" color="#ffffff" intensity="0.05"></a-light>
-
-    <!-- Directional: soft fill from above -->
-    <a-light type="directional" color="#e8e0d0" intensity="0.3" position="4 8 2"></a-light>
-
-    <!-- Point red: orbits around the scene -->
-    <a-entity
-      animation="property:rotation; to:0 360 0; loop:true; dur:5000; easing:linear"
-      position="0 1.4 -5">
-      <a-light type="point" color="#ff2200" intensity="3" distance="8" decay="2" position="2.5 0 0">
-        <a-sphere radius="0.08" material="color:#ff2200; emissive:#ff2200; emissiveIntensity:1"></a-sphere>
-      </a-light>
-    </a-entity>
-
-    <!-- Point blue: orbits opposite direction -->
-    <a-entity
-      animation="property:rotation; to:0 -360 0; loop:true; dur:7000; easing:linear"
-      position="0 1.4 -5">
-      <a-light type="point" color="#2979ff" intensity="3" distance="8" decay="2" position="-2.5 0.5 0">
-        <a-sphere radius="0.08" material="color:#2979ff; emissive:#2979ff; emissiveIntensity:1"></a-sphere>
-      </a-light>
-    </a-entity>
-
-    <!-- Spot: sweeps back and forth above -->
-    <a-entity position="0 5 -5">
-      <a-light
-        type="spot"
-        color="#00ff88"
-        intensity="4"
-        distance="12"
-        angle="22"
-        penumbra="0.3"
-        decay="1"
-        target="#stage-center"
-        animation__x="property:position; from:-3 0 0; to:3 0 0; dir:alternate; loop:true; dur:4000; easing:easeInOutSine">
-      </a-light>
-    </a-entity>
-
-    <!-- Central sphere: polished mirror to reflect lights -->
-    <a-sphere id="stage-center" position="0 1.4 -5" radius="1"
-      material="color:#cccccc; roughness:0.05; metalness:1">
+    <!-- NUCLEO: esfera preta perolada -->
+    <a-sphere position="0 1.6 -5" radius="1.1"
+      material="color:#1a1a2e; roughness:0.1; metalness:0.95; emissive:#0a0a1a; emissiveIntensity:0.3">
     </a-sphere>
 
-    <!-- Surrounding matte spheres to show light color falloff -->
-    <a-sphere position="-3   1.4 -5" radius="0.55" material="color:#ffffff; roughness:0.95; metalness:0"></a-sphere>
-    <a-sphere position=" 3   1.4 -5" radius="0.55" material="color:#ffffff; roughness:0.95; metalness:0"></a-sphere>
-    <a-sphere position=" 0   1.4 -8" radius="0.55" material="color:#ffffff; roughness:0.95; metalness:0"></a-sphere>
-    <a-sphere position="-2.1 1.4 -7" radius="0.55" material="color:#ffffff; roughness:0.95; metalness:0"></a-sphere>
-    <a-sphere position=" 2.1 1.4 -7" radius="0.55" material="color:#ffffff; roughness:0.95; metalness:0"></a-sphere>
+    <!-- ELETRON 1: vermelho, orbita horizontal -->
+    <a-entity position="0 1.6 -5"
+      animation="property:rotation; from:0 0 0; to:0 360 0; loop:true; dur:3000; easing:linear">
+      <a-entity position="2.4 0 0">
+        <a-sphere radius="0.18"
+          material="color:#ff2200; emissive:#ff2200; emissiveIntensity:1; roughness:0; metalness:0">
+        </a-sphere>
+        <a-light type="point" color="#ff2200" intensity="2.5" distance="7" decay="2"></a-light>
+      </a-entity>
+    </a-entity>
 
-    <!-- Floor: receives shadows and light color -->
-    <a-plane rotation="-90 0 0" width="20" height="20" position="0 0 -5"
-      material="color:#111111; roughness:0.9; metalness:0">
-    </a-plane>
+    <!-- ELETRON 2: azul, orbita inclinada 60deg -->
+    <a-entity position="0 1.6 -5" rotation="60 0 0"
+      animation="property:rotation; from:60 0 0; to:60 360 0; loop:true; dur:4500; easing:linear">
+      <a-entity position="2.4 0 0">
+        <a-sphere radius="0.18"
+          material="color:#2979ff; emissive:#2979ff; emissiveIntensity:1; roughness:0; metalness:0">
+        </a-sphere>
+        <a-light type="point" color="#2979ff" intensity="2.5" distance="7" decay="2"></a-light>
+      </a-entity>
+    </a-entity>
+
+    <!-- ELETRON 3: verde, orbita inclinada -60deg -->
+    <a-entity position="0 1.6 -5" rotation="-60 0 0"
+      animation="property:rotation; from:-60 0 0; to:-60 360 0; loop:true; dur:6000; easing:linear">
+      <a-entity position="2.4 0 0">
+        <a-sphere radius="0.18"
+          material="color:#00e676; emissive:#00e676; emissiveIntensity:1; roughness:0; metalness:0">
+        </a-sphere>
+        <a-light type="point" color="#00e676" intensity="2.5" distance="7" decay="2"></a-light>
+      </a-entity>
+    </a-entity>
+
+    <!-- ELETRON 4: amarelo, orbita vertical -->
+    <a-entity position="0 1.6 -5" rotation="90 0 0"
+      animation="property:rotation; from:90 0 0; to:90 360 0; loop:true; dur:5200; easing:linear">
+      <a-entity position="2.4 0 0">
+        <a-sphere radius="0.18"
+          material="color:#ffd600; emissive:#ffd600; emissiveIntensity:1; roughness:0; metalness:0">
+        </a-sphere>
+        <a-light type="point" color="#ffd600" intensity="2.5" distance="7" decay="2"></a-light>
+      </a-entity>
+    </a-entity>
 
     <a-camera position="0 1.6 0" look-controls wasd-controls></a-camera>
 
