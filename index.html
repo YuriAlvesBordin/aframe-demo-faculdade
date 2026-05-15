@@ -5,285 +5,261 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A-Frame Demo</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --black:  #0a0a0a;
       --white:  #f0f0f0;
-      --green:  #00ff41;
-      --yellow: #ffe600;
-      --blue:   #0057ff;
-      --red:    #ff1a1a;
+      --green:  #00c853;
+      --yellow: #ffd600;
+      --blue:   #2979ff;
+      --dim:    #333;
+      --muted:  #777;
     }
 
     body {
       background: var(--black);
       color: var(--white);
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: 'IBM Plex Sans', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* ── HEADER ── */
+    /* HEADER */
     header {
-      border-bottom: 3px solid var(--white);
-      padding: 24px 40px;
+      padding: 40px 48px 32px;
+      border-bottom: 1px solid var(--dim);
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       gap: 24px;
     }
 
-    .header-left { display: flex; flex-direction: column; gap: 4px; }
-
-    h1 {
-      font-size: clamp(2.8rem, 6vw, 5rem);
-      font-weight: 900;
-      letter-spacing: -1px;
-      line-height: 1;
-      text-transform: uppercase;
-    }
-
-    h1 span { color: var(--green); }
-
-    .header-sub {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.78rem;
-      color: #888;
+    .header-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--green);
       letter-spacing: 2px;
       text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
-    .header-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      border: 1px solid #444;
-      padding: 4px 10px;
-      color: #666;
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1;
+    }
+
+    .header-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 8px;
+      font-weight: 300;
+    }
+
+    .header-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      border: 1px solid var(--dim);
+      padding: 5px 12px;
       white-space: nowrap;
+      align-self: flex-start;
     }
 
-    /* ── MAIN GRID ── */
+    /* CARDS */
     main {
       flex: 1;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      border-bottom: 3px solid var(--white);
     }
 
     .card {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 32px 36px;
+      padding: 36px 40px;
       text-decoration: none;
       color: var(--white);
-      border-right: 3px solid var(--white);
-      min-height: 340px;
+      border-right: 1px solid var(--dim);
+      border-bottom: 1px solid var(--dim);
+      min-height: 360px;
+      transition: background 0.2s ease;
       position: relative;
-      overflow: hidden;
-      transition: background 0.15s ease;
     }
 
     .card:last-child { border-right: none; }
+    .card:hover { background: #141414; }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 5px;
+    .card-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 24px;
     }
 
-    .card-01::before { background: var(--green); }
-    .card-02::before { background: var(--yellow); }
-    .card-03::before { background: var(--blue); }
-
-    .card-01:hover { background: #001a09; }
-    .card-02:hover { background: #1a1700; }
-    .card-03:hover { background: #00001a; }
-
-    .card-top { display: flex; flex-direction: column; gap: 16px; }
-
-    .card-index {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 3px;
-      color: #555;
+    .card-indicator {
+      width: 28px;
+      height: 3px;
+      margin-bottom: 20px;
     }
+
+    .card-01 .card-indicator { background: var(--green); }
+    .card-02 .card-indicator { background: var(--yellow); }
+    .card-03 .card-indicator { background: var(--blue); }
 
     .card-title {
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      line-height: 1.05;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 14px;
       letter-spacing: -0.5px;
     }
 
-    .card-01 .card-title { color: var(--green); }
-    .card-02 .card-title { color: var(--yellow); }
-    .card-03 .card-title { color: var(--blue); }
-
     .card-desc {
-      font-size: 0.95rem;
-      font-weight: 400;
-      color: #aaa;
-      line-height: 1.5;
-      max-width: 28ch;
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
     }
 
-    .card-bottom { display: flex; flex-direction: column; gap: 12px; }
+    .card-bottom {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
     .card-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: #555;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dim);
+      letter-spacing: 0.5px;
+    }
+
+    .card-link {
+      font-size: 0.8rem;
+      font-weight: 600;
       letter-spacing: 1px;
-    }
-
-    .card-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .card-01 .card-cta { color: var(--green); }
-    .card-02 .card-cta { color: var(--yellow); }
-    .card-03 .card-cta { color: var(--blue); }
+    .card-01 .card-link { color: var(--green); }
+    .card-02 .card-link { color: var(--yellow); }
+    .card-03 .card-link { color: var(--blue); }
 
-    .card-cta::after {
-      content: '\2192';
-      font-size: 1.1rem;
-      transition: transform 0.15s ease;
+    .card-link svg {
+      transition: transform 0.2s ease;
     }
+    .card:hover .card-link svg { transform: translateX(4px); }
 
-    .card:hover .card-cta::after { transform: translateX(5px); }
-
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer {
-      padding: 16px 40px;
+      padding: 20px 48px;
+      border-top: 1px solid var(--dim);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px;
     }
 
-    .footer-left {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: #555;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .footer-right {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: #555;
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
       letter-spacing: 1px;
     }
 
-    .footer-right a { color: var(--green); text-decoration: none; }
-    .footer-right a:hover { text-decoration: underline; }
+    footer a { color: var(--white); text-decoration: none; }
+    footer a:hover { color: var(--green); }
 
-    /* ── STATUS BAR ── */
-    .status-bar {
-      background: var(--red);
-      color: var(--black);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 5px 40px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .status-dot {
-      width: 6px; height: 6px;
-      background: var(--black);
-      border-radius: 50%;
-      animation: blink 1s step-end infinite;
-    }
-
-    @keyframes blink { 50% { opacity: 0; } }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      header { padding: 20px 20px; }
+      header { padding: 28px 24px 24px; }
       main { grid-template-columns: 1fr; }
-      .card { border-right: none; border-bottom: 3px solid var(--white); min-height: 260px; padding: 28px 20px; }
-      .card:last-child { border-bottom: none; }
-      footer { padding: 16px 20px; }
-      .status-bar { padding: 5px 20px; }
+      .card { border-right: none; min-height: auto; padding: 28px 24px; }
+      footer { padding: 16px 24px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="status-bar">
-    <span class="status-dot"></span>
-    <span>Sistema operacional &mdash; 3 modulos disponiveis</span>
-  </div>
-
   <header>
-    <div class="header-left">
-      <h1>A-<span>Frame</span></h1>
-      <p class="header-sub">Computacao Grafica &mdash; Yuri Alves Bordin</p>
+    <div>
+      <p class="header-eyebrow">Computacao Grafica</p>
+      <h1>A-Frame Demo</h1>
+      <p class="header-sub">Yuri Alves Bordin &mdash; Demonstracao de biblioteca WebXR</p>
     </div>
-    <span class="header-tag">v1.5.0 / WebXR</span>
+    <span class="header-badge">aframe v1.5.0</span>
   </header>
 
   <main>
     <a class="card card-01" href="cenas/primitivos.html">
-      <div class="card-top">
-        <span class="card-index">MODULO_01</span>
-        <h2 class="card-title">Primitivos<br>3D</h2>
-        <p class="card-desc">Geometrias nativas: box, sphere, cylinder, cone, torus e plane.</p>
+      <div>
+        <div class="card-indicator"></div>
+        <p class="card-num">01 / GEOMETRIA</p>
+        <h2 class="card-title">Primitivos 3D</h2>
+        <p class="card-desc">Geometrias nativas do A-Frame: box, sphere, cylinder, cone, torus e plane com atributos declarativos.</p>
       </div>
       <div class="card-bottom">
         <span class="card-tag">&lt;a-box&gt; &lt;a-sphere&gt; &lt;a-cylinder&gt;</span>
-        <span class="card-cta">Abrir modulo</span>
+        <span class="card-link">
+          Abrir
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </div>
     </a>
 
     <a class="card card-02" href="cenas/materiais.html">
-      <div class="card-top">
-        <span class="card-index">MODULO_02</span>
-        <h2 class="card-title">Materiais<br>PBR</h2>
-        <p class="card-desc">Roughness, metalness, opacity, emissive e wireframe.</p>
+      <div>
+        <div class="card-indicator"></div>
+        <p class="card-num">02 / RENDERIZACAO</p>
+        <h2 class="card-title">Materiais PBR</h2>
+        <p class="card-desc">Sistema de materiais com roughness, metalness, opacity, emissive e wireframe via Physically Based Rendering.</p>
       </div>
       <div class="card-bottom">
         <span class="card-tag">material="roughness:0; metalness:1"</span>
-        <span class="card-cta">Abrir modulo</span>
+        <span class="card-link">
+          Abrir
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </div>
     </a>
 
     <a class="card card-03" href="cenas/animacoes.html">
-      <div class="card-top">
-        <span class="card-index">MODULO_03</span>
-        <h2 class="card-title">Animacoes<br>Declarativas</h2>
-        <p class="card-desc">Posicao, rotacao, escala e cor animados via atributo HTML.</p>
+      <div>
+        <div class="card-indicator"></div>
+        <p class="card-num">03 / ANIMACAO</p>
+        <h2 class="card-title">Animacoes Declarativas</h2>
+        <p class="card-desc">Animacao de posicao, rotacao, escala e cor diretamente em HTML, sem JavaScript, com suporte a easing e loops.</p>
       </div>
       <div class="card-bottom">
         <span class="card-tag">animation="property:rotation; loop:true"</span>
-        <span class="card-cta">Abrir modulo</span>
+        <span class="card-link">
+          Abrir
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </div>
     </a>
   </main>
 
   <footer>
-    <span class="footer-left">Projeto academico &mdash; uso educacional</span>
-    <span class="footer-right"><a href="https://aframe.io" target="_blank">aframe.io</a></span>
+    <span>Projeto academico &mdash; uso educacional</span>
+    <span><a href="https://aframe.io" target="_blank">aframe.io</a></span>
   </footer>
 
 </body>
