@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A-Frame Demo — Faculdade</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    header { text-align: center; margin-bottom: 48px; }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+    header p { color: #8b949e; font-size: 0.95rem; }
+    .badge {
+      display: inline-block; margin-top: 12px;
+      background: #21262d; border: 1px solid #30363d;
+      border-radius: 999px; padding: 4px 14px;
+      font-size: 0.78rem; color: #58a6ff;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 800px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: #58a6ff; transform: translateY(-3px); }
+    .card-num { font-size: 0.75rem; color: #8b949e; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .card h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 0.85rem; color: #8b949e; line-height: 1.5; }
+    .card-tag {
+      display: inline-block; margin-top: 14px;
+      background: #21262d; border-radius: 4px;
+      padding: 2px 8px; font-size: 0.72rem;
+      color: #3fb950; font-family: monospace;
+    }
+    footer { margin-top: 56px; color: #484f58; font-size: 0.8rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎓 A-Frame Demo</h1>
+    <p>Projeto de faculdade — demonstração da biblioteca A-Frame</p>
+    <span class="badge">Computação Gráfica</span>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="cenas/primitivos.html">
+      <div class="card-num">Demo 01</div>
+      <h2>Primitivos 3D</h2>
+      <p>Geometrias nativas do A-Frame: box, sphere, cylinder, cone, torus e plane.</p>
+      <span class="card-tag">&lt;a-box&gt; &lt;a-sphere&gt;</span>
+    </a>
+
+    <a class="card" href="cenas/materiais.html">
+      <div class="card-num">Demo 02</div>
+      <h2>Materiais</h2>
+      <p>Sistema PBR com roughness, metalness, opacity, emissive e wireframe.</p>
+      <span class="card-tag">material="roughness:0"</span>
+    </a>
+
+    <a class="card" href="cenas/animacoes.html">
+      <div class="card-num">Demo 03</div>
+      <h2>Animações</h2>
+      <p>Animações declarativas de posição, rotação, escala e cor via atributo HTML.</p>
+      <span class="card-tag">animation="property:..."</span>
+    </a>
+  </div>
+
+  <footer>
+    Yuri Alves Bordin &mdash; <a href="https://aframe.io" target="_blank" style="color:#58a6ff">aframe.io</a>
+  </footer>
+
+</body>
+</html>
