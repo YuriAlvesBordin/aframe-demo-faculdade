@@ -6,8 +6,7 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body { background: #0a0a0a; font-family: 'IBM Plex Mono', monospace; }
+    body { background: #0a0a0a; font-family: 'IBM Plex Mono', monospace; overflow: hidden; }
 
     #back {
       position: fixed; top: 16px; left: 16px; z-index: 9999;
@@ -17,14 +16,12 @@
     }
     #back:hover { background: rgba(255,255,255,0.15); }
 
-    /* DROP SCREEN */
     #drop-screen {
       position: fixed; inset: 0; z-index: 8000;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 20px;
       background: #0a0a0a;
     }
-
     #drop-zone {
       width: 340px; border: 2px dashed #2a2a2a; border-radius: 12px;
       padding: 48px 32px; text-align: center;
@@ -32,11 +29,9 @@
       background: #111;
     }
     #drop-zone.over { border-color: #00c853; background: rgba(0,200,83,0.05); }
-
     #drop-zone svg { margin: 0 auto 16px; display: block; opacity: 0.35; }
     #drop-zone strong { display: block; font-size: 0.9rem; color: #f0f0f0; margin-bottom: 6px; font-family: 'IBM Plex Sans', sans-serif; }
     #drop-zone p { font-size: 0.72rem; color: #555; line-height: 1.7; }
-
     #btn-pick {
       background: #00c853; color: #000; border: none;
       padding: 11px 32px; border-radius: 6px;
@@ -47,31 +42,23 @@
     #btn-pick:hover { background: #00e676; }
     #file-input { display: none; }
 
-    /* HUD */
     #hud {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       z-index: 9999; display: none; align-items: center; gap: 12px;
       background: rgba(0,0,0,0.75); border: 1px solid #222;
       border-radius: 8px; padding: 10px 20px; pointer-events: auto;
     }
-
-    #hud span {
-      font-size: 0.7rem; color: #555; white-space: nowrap;
-    }
-
-    #hud strong { color: #00c853; }
-
-    .hud-sep { color: #2a2a2a; }
-
-    #btn-rotate, #btn-remove {
+    #hud strong { font-size: 0.7rem; color: #00c853; white-space: nowrap; }
+    .hud-sep { color: #2a2a2a; font-size: 0.7rem; }
+    #hud-hint { font-size: 0.65rem; color: #444; white-space: nowrap; }
+    #btn-remove {
       background: none; border: 1px solid #333; color: #aaa;
       padding: 5px 12px; border-radius: 5px;
       font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
       cursor: pointer; letter-spacing: 1px; text-transform: uppercase;
       transition: border-color 0.15s, color 0.15s;
     }
-    #btn-rotate:hover { border-color: #ffd600; color: #ffd600; }
-    #btn-remove:hover  { border-color: #ff2200; color: #ff2200; }
+    #btn-remove:hover { border-color: #ff2200; color: #ff2200; }
 
     a-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
   </style>
@@ -81,7 +68,7 @@
   <a href="../index.html" id="back">&#8592; Voltar</a>
 
   <div id="drop-screen">
-    <div id="drop-zone" id="dz">
+    <div id="drop-zone">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="17 8 12 3 7 8"/>
@@ -97,21 +84,25 @@
   <div id="hud">
     <strong id="hud-name"></strong>
     <span class="hud-sep">|</span>
-    <button id="btn-rotate">Rotacao ON</button>
+    <span id="hud-hint">Arraste: orbitar &nbsp; Scroll: zoom &nbsp; Botao direito: pan</span>
+    <span class="hud-sep">|</span>
     <button id="btn-remove">Remover</button>
   </div>
 
-  <a-scene id="scene" background="color: #0a0a0a" renderer="antialias:true">
-    <a-light type="ambient"      color="#ffffff" intensity="0.6"></a-light>
-    <a-light type="directional"  color="#ffffff" intensity="1.5" position="5 10 7"></a-light>
-    <a-light type="directional"  color="#8899ff" intensity="0.4" position="-5 2 -3"></a-light>
+  <a-scene id="scene" background="color: #0a0a0a" renderer="antialias:true" vr-mode-ui="enabled:false">
+    <a-light type="ambient"     color="#ffffff" intensity="0.6"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="1.5" position="5 10 7"></a-light>
+    <a-light type="directional" color="#8899ff" intensity="0.4" position="-5 2 -3"></a-light>
 
     <a-entity id="model-wrapper" position="0 0 0"></a-entity>
 
     <a-plane rotation="-90 0 0" width="40" height="40" position="0 -2 0"
       material="color:#0f0f0f; roughness:1; metalness:0"></a-plane>
 
-    <a-camera id="cam" position="0 1 6" look-controls="pointerLockEnabled:false" wasd-controls></a-camera>
+    <a-camera id="cam" position="0 0 6"
+      look-controls="enabled:false"
+      wasd-controls="enabled:false">
+    </a-camera>
   </a-scene>
 
   <script>
@@ -121,24 +112,143 @@
     const btnPick    = document.getElementById('btn-pick');
     const hud        = document.getElementById('hud');
     const hudName    = document.getElementById('hud-name');
-    const btnRotate  = document.getElementById('btn-rotate');
     const btnRemove  = document.getElementById('btn-remove');
     const wrapper    = document.getElementById('model-wrapper');
 
-    let rotating  = true;
-    let blobURL   = null;
-    let modelEl   = null;
+    let blobURL = null;
+    let modelEl = null;
 
+    /* ── ORBIT CONTROLS ── */
+    const orbit = {
+      theta: 0,
+      phi: 75,
+      radius: 6,
+      panX: 0,
+      panY: 0,
+      dragging: false,
+      panning: false,
+      lastX: 0,
+      lastY: 0,
+    };
+
+    const DEG = Math.PI / 180;
+
+    function updateCamera() {
+      const camEl = document.getElementById('cam');
+      const r = orbit.radius;
+      const phi   = orbit.phi   * DEG;
+      const theta = orbit.theta * DEG;
+
+      const x = r * Math.sin(phi) * Math.sin(theta) + orbit.panX;
+      const y = r * Math.cos(phi)                   + orbit.panY;
+      const z = r * Math.sin(phi) * Math.cos(theta);
+
+      camEl.setAttribute('position', x + ' ' + y + ' ' + z);
+
+      const target = new THREE.Vector3(orbit.panX, orbit.panY, 0);
+      const pos    = new THREE.Vector3(x, y, z);
+      const mat    = new THREE.Matrix4().lookAt(pos, target, new THREE.Vector3(0, 1, 0));
+      const quat   = new THREE.Quaternion().setFromRotationMatrix(mat);
+      const euler  = new THREE.Euler().setFromQuaternion(quat, 'YXZ');
+
+      camEl.setAttribute('rotation', {
+        x: THREE.MathUtils.radToDeg(euler.x),
+        y: THREE.MathUtils.radToDeg(euler.y),
+        z: THREE.MathUtils.radToDeg(euler.z),
+      });
+    }
+
+    const canvas = document.querySelector('a-scene');
+
+    canvas.addEventListener('mousedown', e => {
+      if (dropScreen.style.display !== 'none') return;
+      if (e.button === 0) { orbit.dragging = true; }
+      if (e.button === 2) { orbit.panning  = true; }
+      orbit.lastX = e.clientX;
+      orbit.lastY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', e => {
+      const dx = e.clientX - orbit.lastX;
+      const dy = e.clientY - orbit.lastY;
+      orbit.lastX = e.clientX;
+      orbit.lastY = e.clientY;
+
+      if (orbit.dragging) {
+        orbit.theta -= dx * 0.4;
+        orbit.phi    = Math.max(5, Math.min(175, orbit.phi + dy * 0.4));
+        updateCamera();
+      }
+      if (orbit.panning) {
+        const speed = orbit.radius * 0.001;
+        orbit.panX -= dx * speed;
+        orbit.panY += dy * speed;
+        updateCamera();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      orbit.dragging = false;
+      orbit.panning  = false;
+    });
+
+    canvas.addEventListener('wheel', e => {
+      if (dropScreen.style.display !== 'none') return;
+      e.preventDefault();
+      orbit.radius = Math.max(1, Math.min(20, orbit.radius + e.deltaY * 0.01));
+      updateCamera();
+    }, { passive: false });
+
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    /* ── TOUCH ── */
+    let lastTouchDist = 0;
+    canvas.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        orbit.dragging = true;
+        orbit.lastX = e.touches[0].clientX;
+        orbit.lastY = e.touches[0].clientY;
+      }
+      if (e.touches.length === 2) {
+        orbit.dragging = false;
+        lastTouchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (e.touches.length === 1 && orbit.dragging) {
+        const dx = e.touches[0].clientX - orbit.lastX;
+        const dy = e.touches[0].clientY - orbit.lastY;
+        orbit.lastX = e.touches[0].clientX;
+        orbit.lastY = e.touches[0].clientY;
+        orbit.theta -= dx * 0.4;
+        orbit.phi    = Math.max(5, Math.min(175, orbit.phi + dy * 0.4));
+        updateCamera();
+      }
+      if (e.touches.length === 2) {
+        const d = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        orbit.radius = Math.max(1, Math.min(20, orbit.radius - (d - lastTouchDist) * 0.02));
+        lastTouchDist = d;
+        updateCamera();
+      }
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => { orbit.dragging = false; });
+
+    /* ── FILE LOADING ── */
     btnPick.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('click', () => fileInput.click());
-
     dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
     dropZone.addEventListener('drop', e => {
       e.preventDefault(); dropZone.classList.remove('over');
       if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
     });
-
     fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
     function clearModel() {
@@ -153,41 +263,36 @@
         alert('Formato nao suportado. Use .glb, .gltf ou .obj');
         return;
       }
-
       clearModel();
-      blobURL  = URL.createObjectURL(file);
-      modelEl  = document.createElement('a-entity');
-
+      blobURL = URL.createObjectURL(file);
+      modelEl = document.createElement('a-entity');
       if (ext === 'obj') {
         modelEl.setAttribute('obj-model', 'obj: ' + blobURL);
       } else {
         modelEl.setAttribute('gltf-model', blobURL);
       }
-
       wrapper.appendChild(modelEl);
 
       modelEl.addEventListener('model-loaded', () => {
         const obj = modelEl.getObject3D('mesh');
         if (!obj) return;
-
         obj.updateMatrixWorld(true);
         const box    = new THREE.Box3().setFromObject(obj);
         const size   = new THREE.Vector3();
         const center = new THREE.Vector3();
         box.getSize(size);
         box.getCenter(center);
-
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale  = maxDim > 0 ? (3 / maxDim) : 1;
-
         modelEl.object3D.scale.set(scale, scale, scale);
-        modelEl.object3D.position.set(
-          -center.x * scale,
-          -center.y * scale,
-          0
-        );
+        modelEl.object3D.position.set(-center.x * scale, -center.y * scale, 0);
 
-        if (rotating) applyRotation();
+        orbit.radius = 5;
+        orbit.theta  = 0;
+        orbit.phi    = 75;
+        orbit.panX   = 0;
+        orbit.panY   = 0;
+        updateCamera();
 
         hudName.textContent = file.name;
         dropScreen.style.display = 'none';
@@ -200,28 +305,14 @@
       });
     }
 
-    function applyRotation() {
-      if (!modelEl) return;
-      modelEl.setAttribute('animation', 'property:object3D.rotation.y; from:0; to:360; loop:true; dur:8000; easing:linear');
-    }
-
-    function removeRotation() {
-      if (!modelEl) return;
-      modelEl.removeAttribute('animation');
-    }
-
-    btnRotate.addEventListener('click', () => {
-      rotating = !rotating;
-      btnRotate.textContent = 'Rotacao ' + (rotating ? 'ON' : 'OFF');
-      rotating ? applyRotation() : removeRotation();
-    });
-
     btnRemove.addEventListener('click', () => {
       clearModel();
       fileInput.value = '';
       hud.style.display = 'none';
       dropScreen.style.display = 'flex';
     });
+
+    document.querySelector('a-scene').addEventListener('loaded', updateCamera);
   </script>
 </body>
 </html>
