@@ -32,40 +32,18 @@
       transition: border-color 0.2s, background 0.2s;
       font-family: 'IBM Plex Mono', monospace;
     }
+    #drop-zone.dragover { border-color: #00c853; background: rgba(0,200,83,0.07); }
+    #drop-zone p { font-size: 0.78rem; color: #555; margin-top: 10px; line-height: 1.6; }
+    #drop-zone strong { font-size: 0.9rem; color: #f0f0f0; display: block; margin-bottom: 4px; }
 
-    #drop-zone.dragover {
-      border-color: #00c853;
-      background: rgba(0,200,83,0.07);
-    }
-
-    #drop-zone p {
-      font-size: 0.78rem;
-      color: #555;
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-
-    #drop-zone strong {
-      font-size: 0.9rem;
-      color: #f0f0f0;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .icon {
-      width: 40px; height: 40px; margin: 0 auto 12px;
-      opacity: 0.4;
-    }
-
+    .icon { width: 40px; height: 40px; margin: 0 auto 12px; opacity: 0.4; }
     #file-input { display: none; }
 
     #btn-pick {
-      background: #00c853; color: #000;
-      border: none; padding: 10px 28px;
+      background: #00c853; color: #000; border: none; padding: 10px 28px;
       border-radius: 6px; font-family: 'IBM Plex Mono', monospace;
       font-size: 0.78rem; cursor: pointer; font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase;
-      transition: background 0.15s;
+      letter-spacing: 1px; text-transform: uppercase; transition: background 0.15s;
     }
     #btn-pick:hover { background: #00e676; }
 
@@ -73,15 +51,14 @@
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.7); color: #555; padding: 8px 20px;
       border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
-      pointer-events: none; border: 1px solid #222; z-index: 9999;
-      transition: color 0.3s;
+      pointer-events: none; border: 1px solid #222; z-index: 9999; transition: color 0.3s;
+      white-space: nowrap;
     }
 
     #controls {
       position: fixed; top: 16px; right: 16px; z-index: 9999;
       display: none; flex-direction: column; gap: 8px; pointer-events: auto;
     }
-
     .ctrl-btn {
       background: rgba(0,0,0,0.7); color: #f0f0f0;
       border: 1px solid #333; padding: 7px 14px;
@@ -90,6 +67,20 @@
       transition: border-color 0.15s, background 0.15s;
     }
     .ctrl-btn:hover { border-color: #00c853; background: rgba(0,200,83,0.08); color: #00c853; }
+    .ctrl-btn.active { border-color: #00c853; color: #00c853; }
+
+    #hint {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 9999; pointer-events: none;
+      display: none;
+      gap: 16px;
+    }
+    .hint-item {
+      background: rgba(0,0,0,0.65); border: 1px solid #2a2a2a;
+      border-radius: 6px; padding: 5px 12px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: #666;
+    }
+    .hint-item b { color: #aaa; }
 
     a-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
   </style>
@@ -112,41 +103,181 @@
     <input type="file" id="file-input" accept=".glb,.gltf,.obj">
   </div>
 
+  <div id="hint">
+    <span class="hint-item"><b>Botao esq.</b> Orbitar</span>
+    <span class="hint-item"><b>Scroll</b> Zoom</span>
+    <span class="hint-item"><b>Botao dir.</b> Pan</span>
+  </div>
+
   <div id="controls">
-    <button class="ctrl-btn" id="btn-rotate">Rotacao: ON</button>
+    <button class="ctrl-btn active" id="btn-rotate">Auto-rotacao: ON</button>
     <button class="ctrl-btn" id="btn-remove">Remover modelo</button>
   </div>
 
   <div id="status">Aguardando modelo...</div>
 
-  <a-scene background="color: #0a0a0a">
+  <a-scene background="color: #0a0a0a" vr-mode-ui="enabled: false">
     <a-assets id="assets"></a-assets>
 
     <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
     <a-light type="directional" color="#ffffff" intensity="1.2" position="3 6 4"></a-light>
     <a-light type="point" color="#4488ff" intensity="1" position="-4 3 -2" distance="15" decay="2"></a-light>
 
-    <a-entity id="model-container" position="0 1.4 -4"></a-entity>
+    <a-entity id="orbit-pivot" position="0 0 0">
+      <a-entity id="camera-arm" position="0 0 5">
+        <a-camera id="main-cam" look-controls="enabled:false" wasd-controls="enabled:false" position="0 0 0"></a-camera>
+      </a-entity>
+    </a-entity>
 
-    <a-plane rotation="-90 0 0" width="20" height="20" position="0 0 -4"
+    <a-entity id="model-container" position="0 0 0"></a-entity>
+
+    <a-plane rotation="-90 0 0" width="20" height="20" position="0 -1.2 0"
       material="color:#111; roughness:0.9; metalness:0">
     </a-plane>
-
-    <a-camera position="0 1.6 0" look-controls wasd-controls></a-camera>
   </a-scene>
 
   <script>
-    const ui        = document.getElementById('ui');
-    const controls  = document.getElementById('controls');
-    const status    = document.getElementById('status');
-    const container = document.getElementById('model-container');
-    const dropZone  = document.getElementById('drop-zone');
-    const btnRotate = document.getElementById('btn-rotate');
-    const btnRemove = document.getElementById('btn-remove');
+    const ui         = document.getElementById('ui');
+    const hint       = document.getElementById('hint');
+    const controls   = document.getElementById('controls');
+    const status     = document.getElementById('status');
+    const container  = document.getElementById('model-container');
+    const dropZone   = document.getElementById('drop-zone');
+    const btnRotate  = document.getElementById('btn-rotate');
+    const btnRemove  = document.getElementById('btn-remove');
+    const pivot      = document.getElementById('orbit-pivot');
+    const arm        = document.getElementById('camera-arm');
 
-    let rotating = true;
-    let objectURL = null;
+    let objectURL  = null;
+    let autoRotate = true;
+    let rafId      = null;
+    let modelLoaded = false;
 
+    // Orbit state
+    const orbit = {
+      theta: 0,    // horizontal angle (deg)
+      phi:   20,   // vertical angle (deg)
+      radius: 5,
+      minR:  0.5,
+      maxR:  20,
+      drag:  false,
+      pan:   false,
+      lastX: 0,
+      lastY: 0,
+      panX:  0,
+      panY:  0,
+    };
+
+    function applyOrbit() {
+      const t = THREE.MathUtils.degToRad(orbit.theta);
+      const p = THREE.MathUtils.degToRad(Math.max(-80, Math.min(80, orbit.phi)));
+      const r = orbit.radius;
+      const x = r * Math.cos(p) * Math.sin(t);
+      const y = r * Math.sin(p);
+      const z = r * Math.cos(p) * Math.cos(t);
+      const camEl = document.getElementById('main-cam');
+      camEl.object3D.position.set(orbit.panX + x, orbit.panY + y, z);
+      camEl.object3D.lookAt(new THREE.Vector3(orbit.panX, orbit.panY, 0));
+    }
+
+    // Mouse
+    const canvas = document.querySelector('canvas');
+
+    function onMouseDown(e) {
+      if (!modelLoaded) return;
+      if (e.button === 0) { orbit.drag = true; }
+      if (e.button === 2) { orbit.pan  = true; }
+      orbit.lastX = e.clientX;
+      orbit.lastY = e.clientY;
+    }
+
+    function onMouseMove(e) {
+      const dx = e.clientX - orbit.lastX;
+      const dy = e.clientY - orbit.lastY;
+      orbit.lastX = e.clientX;
+      orbit.lastY = e.clientY;
+      if (orbit.drag) {
+        orbit.theta -= dx * 0.4;
+        orbit.phi   += dy * 0.4;
+        applyOrbit();
+      }
+      if (orbit.pan) {
+        orbit.panX -= dx * 0.005 * orbit.radius;
+        orbit.panY += dy * 0.005 * orbit.radius;
+        applyOrbit();
+      }
+    }
+
+    function onMouseUp()  { orbit.drag = false; orbit.pan = false; }
+
+    function onWheel(e) {
+      if (!modelLoaded) return;
+      e.preventDefault();
+      orbit.radius = Math.max(orbit.minR, Math.min(orbit.maxR, orbit.radius + e.deltaY * 0.01));
+      applyOrbit();
+    }
+
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup',   onMouseUp);
+    document.addEventListener('wheel',     onWheel, { passive: false });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Touch
+    let touches = {};
+    let lastPinchDist = null;
+
+    document.addEventListener('touchstart', e => {
+      if (!modelLoaded) return;
+      [...e.changedTouches].forEach(t => touches[t.identifier] = { x: t.clientX, y: t.clientY });
+    });
+
+    document.addEventListener('touchmove', e => {
+      if (!modelLoaded) return;
+      e.preventDefault();
+      const ids = Object.keys(touches);
+      if (ids.length === 1) {
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touches[t.identifier].x;
+        const dy = t.clientY - touches[t.identifier].y;
+        orbit.theta -= dx * 0.4;
+        orbit.phi   += dy * 0.4;
+        touches[t.identifier] = { x: t.clientX, y: t.clientY };
+        applyOrbit();
+      } else if (e.touches.length === 2) {
+        const a = e.touches[0], b = e.touches[1];
+        const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+        if (lastPinchDist !== null) {
+          orbit.radius = Math.max(orbit.minR, Math.min(orbit.maxR, orbit.radius - (dist - lastPinchDist) * 0.02));
+          applyOrbit();
+        }
+        lastPinchDist = dist;
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', e => {
+      [...e.changedTouches].forEach(t => delete touches[t.identifier]);
+      if (Object.keys(touches).length < 2) lastPinchDist = null;
+    });
+
+    // Auto-rotate
+    function startAutoRotate() {
+      if (rafId) return;
+      let last = null;
+      function tick(ts) {
+        if (last !== null) orbit.theta += (ts - last) * 0.02;
+        last = ts;
+        applyOrbit();
+        rafId = requestAnimationFrame(tick);
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function stopAutoRotate() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    }
+
+    // File loading
     function setStatus(msg, color) {
       status.textContent = msg;
       status.style.color = color || '#555';
@@ -155,34 +286,24 @@
     function clearModel() {
       while (container.firstChild) container.removeChild(container.firstChild);
       if (objectURL) { URL.revokeObjectURL(objectURL); objectURL = null; }
+      modelLoaded = false;
     }
 
     function loadFile(file) {
       if (!file) return;
-
       const ext = file.name.split('.').pop().toLowerCase();
       if (!['glb', 'gltf', 'obj'].includes(ext)) {
         setStatus('Formato nao suportado. Use .glb, .gltf ou .obj', '#ff2200');
         return;
       }
-
       clearModel();
       setStatus('Carregando ' + file.name + '...', '#ffd600');
-
       objectURL = URL.createObjectURL(file);
       const el = document.createElement('a-entity');
-
       if (ext === 'obj') {
         el.setAttribute('obj-model', 'obj: ' + objectURL);
       } else {
         el.setAttribute('gltf-model', objectURL);
-      }
-
-      el.setAttribute('scale', '1 1 1');
-      el.setAttribute('rotation', '0 0 0');
-
-      if (rotating) {
-        el.setAttribute('animation', 'property:rotation; from:0 0 0; to:0 360 0; loop:true; dur:8000; easing:linear');
       }
 
       el.addEventListener('model-loaded', () => {
@@ -193,14 +314,20 @@
           const maxDim = Math.max(size.x, size.y, size.z);
           if (maxDim > 0) {
             const s = 2 / maxDim;
-            el.setAttribute('scale', s + ' ' + s + ' ' + s);
+            el.setAttribute('scale', `${s} ${s} ${s}`);
+            orbit.radius = maxDim * 1.8;
           }
           const center = box.getCenter(new THREE.Vector3());
-          el.setAttribute('position', (-center.x) + ' ' + (-center.y) + ' ' + (-center.z));
+          el.setAttribute('position', `${-center.x} ${-center.y} ${-center.z}`);
+          orbit.panX = 0; orbit.panY = 0;
+          applyOrbit();
         }
-        setStatus(file.name + '  |  Arraste para girar a camera', '#00c853');
+        modelLoaded = true;
+        setStatus(file.name + '  |  Botao esq: orbitar  |  Scroll: zoom  |  Botao dir: pan', '#00c853');
         ui.style.display = 'none';
+        hint.style.display = 'flex';
         controls.style.display = 'flex';
+        if (autoRotate) startAutoRotate();
       });
 
       el.addEventListener('model-error', () => {
@@ -210,15 +337,10 @@
       container.appendChild(el);
     }
 
-    document.getElementById('file-input').addEventListener('change', e => {
-      loadFile(e.target.files[0]);
-    });
+    document.getElementById('file-input').addEventListener('change', e => loadFile(e.target.files[0]));
 
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('dragover'));
     dropZone.addEventListener('drop', e => {
       e.preventDefault();
       dropZone.classList.remove('dragover');
@@ -226,24 +348,30 @@
     });
 
     btnRotate.addEventListener('click', () => {
-      rotating = !rotating;
-      btnRotate.textContent = 'Rotacao: ' + (rotating ? 'ON' : 'OFF');
-      const el = container.firstChild;
-      if (!el) return;
-      if (rotating) {
-        el.setAttribute('animation', 'property:rotation; from:0 0 0; to:0 360 0; loop:true; dur:8000; easing:linear');
-      } else {
-        el.removeAttribute('animation');
-      }
+      autoRotate = !autoRotate;
+      btnRotate.textContent = 'Auto-rotacao: ' + (autoRotate ? 'ON' : 'OFF');
+      btnRotate.classList.toggle('active', autoRotate);
+      autoRotate ? startAutoRotate() : stopAutoRotate();
     });
+
+    // Stop auto-rotate when user manually orbits
+    document.addEventListener('mousedown', () => { if (modelLoaded && autoRotate) { stopAutoRotate(); autoRotate = false; btnRotate.textContent = 'Auto-rotacao: OFF'; btnRotate.classList.remove('active'); } });
+    document.addEventListener('touchstart', () => { if (modelLoaded && autoRotate) { stopAutoRotate(); autoRotate = false; btnRotate.textContent = 'Auto-rotacao: OFF'; btnRotate.classList.remove('active'); } });
 
     btnRemove.addEventListener('click', () => {
       clearModel();
+      stopAutoRotate();
+      autoRotate = true;
+      btnRotate.textContent = 'Auto-rotacao: ON';
+      btnRotate.classList.add('active');
       ui.style.display = 'flex';
+      hint.style.display = 'none';
       controls.style.display = 'none';
       setStatus('Aguardando modelo...');
       document.getElementById('file-input').value = '';
     });
+
+    applyOrbit();
   </script>
 </body>
 </html>
