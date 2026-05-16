@@ -115,7 +115,6 @@
     let blobURL = null;
     let modelEl = null;
 
-    /* -- ORBIT CONTROLS -- */
     const orbit = {
       theta: 0, phi: 75, radius: 6,
       panX: 0, panY: 0,
@@ -181,7 +180,6 @@
     }, { passive: false });
     sceneEl.addEventListener('contextmenu', e => e.preventDefault());
 
-    /* -- TOUCH -- */
     let lastTouchDist = 0;
     sceneEl.addEventListener('touchstart', e => {
       if (e.touches.length === 1) { orbit.dragging = true; orbit.lastX = e.touches[0].clientX; orbit.lastY = e.touches[0].clientY; }
@@ -201,7 +199,6 @@
     }, { passive: false });
     sceneEl.addEventListener('touchend', () => { orbit.dragging = false; });
 
-    /* -- FILE LOADING -- */
     btnPick.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('over'); });
