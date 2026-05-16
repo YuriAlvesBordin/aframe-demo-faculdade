@@ -28,7 +28,6 @@
       flex-direction: column;
     }
 
-    /* HEADER */
     header {
       padding: 40px 48px 32px;
       border-bottom: 1px solid var(--dim);
@@ -57,7 +56,6 @@
       font-weight: 300;
     }
 
-    /* CARDS */
     main {
       flex: 1;
       display: grid;
@@ -142,12 +140,9 @@
     .card-02 .card-link { color: var(--yellow); }
     .card-03 .card-link { color: var(--blue); }
 
-    .card-link svg {
-      transition: transform 0.2s ease;
-    }
+    .card-link svg { transition: transform 0.2s ease; }
     .card:hover .card-link svg { transform: translateX(4px); }
 
-    /* FOOTER */
     footer {
       padding: 20px 48px;
       border-top: 1px solid var(--dim);
@@ -189,11 +184,11 @@
       <div>
         <div class="card-indicator"></div>
         <p class="card-num">01 / GEOMETRIA</p>
-        <h2 class="card-title">Primitivos 3D</h2>
-        <p class="card-desc">Geometrias nativas do A-Frame: box, sphere, cylinder, cone, torus e plane com atributos declarativos.</p>
+        <h2 class="card-title">Primitivos em Morphing</h2>
+        <p class="card-desc">As geometrias nativas do A-Frame se transformam continuamente uma na outra com materiais, cores e transparencias aleatorios.</p>
       </div>
       <div class="card-bottom">
-        <span class="card-tag">&lt;a-box&gt; &lt;a-sphere&gt; &lt;a-cylinder&gt;</span>
+        <span class="card-tag">&lt;a-box&gt; &lt;a-torus-knot&gt; &lt;a-icosahedron&gt; ...</span>
         <span class="card-link">
           Abrir
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -206,12 +201,12 @@
     <a class="card card-02" href="cenas/materiais.html">
       <div>
         <div class="card-indicator"></div>
-        <p class="card-num">02 / RENDERIZACAO</p>
-        <h2 class="card-title">Materiais PBR</h2>
-        <p class="card-desc">Sistema de materiais com roughness, metalness, opacity, emissive e wireframe via Physically Based Rendering.</p>
+        <p class="card-num">02 / ILUMINACAO</p>
+        <h2 class="card-title">Modelo Atomico</h2>
+        <p class="card-desc">Nucleo metalico com eletrons orbitando em planos distintos, cada um emitindo luz colorida que muda suavemente ao longo do tempo.</p>
       </div>
       <div class="card-bottom">
-        <span class="card-tag">material="roughness:0; metalness:1"</span>
+        <span class="card-tag">type:point &nbsp;emissive &nbsp;metalness:0.95</span>
         <span class="card-link">
           Abrir
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -224,12 +219,12 @@
     <a class="card card-03" href="cenas/animacoes.html">
       <div>
         <div class="card-indicator"></div>
-        <p class="card-num">03 / ANIMACAO</p>
-        <h2 class="card-title">Animacoes Declarativas</h2>
-        <p class="card-desc">Animacao de posicao, rotacao, escala e cor diretamente em HTML, sem JavaScript, com suporte a easing e loops.</p>
+        <p class="card-num">03 / IMPORTACAO</p>
+        <h2 class="card-title">Modelo 3D Externo</h2>
+        <p class="card-desc">Importe um arquivo .glb, .gltf ou .obj diretamente na cena. O modelo e autoescalado, centralizado e animado automaticamente.</p>
       </div>
       <div class="card-bottom">
-        <span class="card-tag">animation="property:rotation; loop:true"</span>
+        <span class="card-tag">gltf-model &nbsp;obj-model &nbsp;THREE.Box3</span>
         <span class="card-link">
           Abrir
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
