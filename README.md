@@ -1,6 +1,6 @@
 # aframe-demo-faculdade
 
-Projeto acadêmico de demonstração da biblioteca [A-Frame](https://aframe.io) para criação de cenas 3D interativas no navegador via WebXR.
+Demonstração interativa da biblioteca [A-Frame](https://aframe.io) para criação de cenas 3D no navegador via WebXR. Desenvolvido como projeto acadêmico para a disciplina de Computação Gráfica.
 
 **Autor:** Yuri Alves Bordin
 
@@ -8,9 +8,9 @@ Projeto acadêmico de demonstração da biblioteca [A-Frame](https://aframe.io) 
 
 ## Sobre o A-Frame
 
-A-Frame é uma biblioteca web de código aberto desenvolvida pela Mozilla que permite construir experiências 3D e de Realidade Virtual (WebVR/WebXR) usando HTML declarativo. Internamente, ela é construída sobre o [Three.js](https://threejs.org) e segue o padrão arquitetural **Entity-Component System (ECS)**, onde cada elemento da cena é uma entidade que recebe comportamentos por meio de componentes.
+A-Frame é uma biblioteca web de código aberto desenvolvida pela Mozilla que permite construir experiências 3D e de Realidade Virtual (WebVR/WebXR) usando HTML declarativo. Internamente é construída sobre o [Three.js](https://threejs.org) e segue o padrão arquitetural **Entity-Component System (ECS)**, onde cada elemento da cena é uma entidade que recebe comportamentos por meio de componentes.
 
-O diferencial da biblioteca é permitir que cenas 3D completas sejam descritas com marcação HTML pura, sem necessidade de pipeline de build, bundler ou configuração de ambiente:
+O diferencial é permitir que cenas 3D completas sejam descritas em HTML puro, sem pipeline de build, bundler ou configuração de ambiente:
 
 ```html
 <a-scene>
@@ -29,9 +29,9 @@ aframe-demo-faculdade/
 +-- index.html              # Pagina inicial com navegacao entre as demos
 |
 +-- cenas/
-|   +-- primitivos.html     # Demo 1 — Primitivos geometricos nativos
-|   +-- materiais.html      # Demo 2 — Sistema de materiais PBR
-|   +-- animacoes.html      # Demo 3 — Animacoes declarativas
+|   +-- primitivos.html     # Demo 1 — Primitivos geometricos com morphing
+|   +-- materiais.html      # Demo 2 — Modelo atomico com iluminacao dinamica
+|   +-- animacoes.html      # Demo 3 — Importacao de modelos 3D externos
 |
 +-- docs/
 |   +-- roteiro.md          # Roteiro para apresentacao oral
@@ -43,45 +43,47 @@ aframe-demo-faculdade/
 
 ## Como Executar
 
-Nao ha dependencias ou etapas de build. Os arquivos podem ser abertos diretamente no navegador ou servidos localmente:
+Nao ha dependencias ou etapas de build. Sirva os arquivos localmente:
 
 ```bash
-# Servidor local com Python
+# Python
 python -m http.server 8080
 
-# Servidor local com Node.js
+# Node.js
 npx serve .
 ```
 
-Depois acesse `http://localhost:8080` no navegador.
+Acesse `http://localhost:8080` no navegador.
 
-> **Nota:** alguns recursos (como carregamento de texturas externas) exigem um servidor HTTP. Abrir via `file://` pode causar erros de CORS.
+> **Nota:** abrir via `file://` pode causar erros de CORS em alguns navegadores. Recomenda-se usar um servidor local.
 
 ---
 
 ## Demos
 
-### Demo 1 — Primitivos 3D
+### Demo 1 — Primitivos em Morphing
 
-Demonstra os elementos geometricos nativos do A-Frame: `<a-box>`, `<a-sphere>`, `<a-cylinder>`, `<a-cone>`, `<a-torus>` e `<a-plane>`. Cada primitivo aceita atributos de posicao, rotacao, escala e cor diretamente no HTML.
+Exibe os primitivos geometricos nativos do A-Frame (`<a-box>`, `<a-sphere>`, `<a-cylinder>`, `<a-cone>`, `<a-torus>`, `<a-torus-knot>`, `<a-icosahedron>`, entre outros) com transicoes automaticas entre formas a cada 2,8 segundos. Cada troca aplica um material PBR aleatorio, variando `roughness`, `metalness`, `opacity`, `emissive` e `wireframe`.
 
-### Demo 2 — Materiais e Texturas
+### Demo 2 — Modelo Atomico
 
-Explora o sistema de renderizacao baseado em fisica (PBR) do A-Frame por meio do atributo `material`. Propriedades demonstradas: `roughness`, `metalness`, `opacity`, `transparent`, `emissive`, `emissiveIntensity` e `wireframe`.
+Simulacao de um atomo com nucleo central e eletrons orbitando em planos distribuidos tridimensionalmente. A quantidade de eletrons e configuravel em tempo real via slider (1 a 10). Cada eletron emite luz pontual colorida e transiciona continuamente entre cores via interpolacao HSL, iluminando o nucleo e os eletrons vizinhos.
 
-### Demo 3 — Animacoes Declarativas
+### Demo 3 — Importacao de Modelo 3D
 
-Ilustra o sistema de animacao do A-Frame via atributo `animation`. Propriedades animadas: `position`, `rotation`, `scale` e `material.color`. Tambem demonstra multiplas animacoes paralelas (`animation__1`, `animation__2`, ...) e diferentes funcoes de easing.
+Permite carregar um arquivo `.glb`, `.gltf` ou `.obj` do sistema de arquivos local via drag-and-drop ou seletor de arquivo. O modelo e centralizado e escalonado automaticamente. A cena oferece controles de orbita estilo Blender: arrastar para orbitar, scroll para zoom e botao direito para pan. Suporte completo a toque em dispositivos moveis.
 
 ---
 
-## Controles de Navegacao
+## Controles
 
-| Acao | Controle |
-|---|---|
-| Girar a camera | Clicar e arrastar |
-| Movimentar | Teclas `W` `A` `S` `D` |
-| Ativar modo VR (se disponivel) | Botao no canto inferior direito |
+| Acao | Mouse | Touch |
+|---|---|---|
+| Orbitar a camera | Clicar e arrastar | Um dedo |
+| Zoom | Scroll | Pinch (dois dedos) |
+| Pan | Botao direito + arrastar | — |
+
+As demos 1 e 2 utilizam os controles nativos de look do A-Frame (`look-controls` + `wasd-controls`).
 
 ---
 
