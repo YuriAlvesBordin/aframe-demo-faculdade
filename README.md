@@ -12,9 +12,12 @@ aframe-demo-faculdade/
 +-- index.html              # Pagina inicial com navegacao entre as demos
 |
 +-- cenas/
-|   +-- primitivos.html     # Demo 1 — Primitivos geometricos com morphing
-|   +-- materiais.html      # Demo 2 — Modelo atomico com iluminacao dinamica
-|   +-- animacoes.html      # Demo 3 — Importacao de modelos 3D externos
+|   +-- demo1.html          # Demo 1 — Primitivos geometricos com morphing
+|   +-- demo2.html          # Demo 2 — Modelo atomico com iluminacao dinamica
+|   +-- demo3.html          # Demo 3 — Importacao de modelos 3D externos
+|   +-- demo1-ar.html       # Demo 1 em AR (marcador Hiro)
+|   +-- demo2-ar.html       # Demo 2 em AR (marcador Hiro)
+|   +-- demo3-ar.html       # Demo 3 em AR (marcador Hiro)
 |
 +-- docs/
 |   +-- roteiro.md          # Roteiro para apresentacao oral
@@ -61,3 +64,22 @@ Simulacao de um atomo com nucleo central e eletrons orbitando em planos distribu
 Permite carregar um arquivo `.glb`, `.gltf` ou `.obj` do sistema de arquivos local via drag-and-drop ou seletor de arquivo. O modelo e centralizado e escalonado automaticamente. A cena oferece controles de orbita estilo Blender: arrastar para orbitar, scroll para zoom e botao direito para pan. Suporte completo a toque em dispositivos moveis.
 
 <img width="1069" height="624" alt="image" src="https://github.com/user-attachments/assets/fd97c5be-6ed0-4449-85db-4983722de5d0" />
+
+---
+
+## Modo AR
+
+Cada demo possui uma versão em Realidade Aumentada acessível pelo botão **Modo AR** na cena. A AR utiliza a biblioteca [AR.js](https://ar-js-org.github.io/AR.js/) com rastreamento por marcador **Hiro**.
+
+Imprima ou exiba o marcador abaixo na tela para usar o modo AR:
+
+<p align="center">
+  <img
+    src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png"
+    alt="Marcador Hiro — AR.js"
+    width="220"
+    height="220"
+  />
+  <br>
+  <em>Marcador Hiro — aponte a câmera para este padrão para ativar a AR</em>
+</p>
